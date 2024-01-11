@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 app = FastAPI()
 
 # Database 1 Configuration
-DATABASE_URL_1 = r"sqlite:///C:\Users\phuong\OneDrive\Private\Xokthavi\HR\XokThaVi.db"
+DATABASE_URL_1 = r"sqlite:///C:\Users\phuong\OneDrive\Private\Xokthavi\HR\ZKTimeNet.db"
 # DATABASE_URL_1 = "sqlite:///C:\Users\phuong\OneDrive\Private\Xokthavi\HR"
 engine1 = create_engine(DATABASE_URL_1)
 Session1 = sessionmaker(autocommit=False, autoflush=False, bind=engine1)
