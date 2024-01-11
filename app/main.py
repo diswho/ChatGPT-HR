@@ -1,12 +1,14 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 app = FastAPI()
 
 # Database 1 Configuration
-DATABASE_URL_1 = "sqlite:///./test1.db"
+DATABASE_URL_1 = r"sqlite:///C:\Users\phuong\OneDrive\Private\Xokthavi\HR\XokThaVi.db"
+# DATABASE_URL_1 = "sqlite:///C:\Users\phuong\OneDrive\Private\Xokthavi\HR"
 engine1 = create_engine(DATABASE_URL_1)
 Session1 = sessionmaker(autocommit=False, autoflush=False, bind=engine1)
 Base1 = declarative_base()
@@ -21,17 +23,17 @@ Base2 = declarative_base()
 
 
 class Item1(Base1):
-    __tablename__ = "items1"
+    __tablename__ = "hr_employee"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
+    emp_pin = Column(String, index=True)
 
 # Example Model for Database 2
 
 
 class Item2(Base2):
-    __tablename__ = "items2"
+    __tablename__ = "hr_employee"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
+    emp_pin = Column(String, index=True)
 
 
 # Create tables in databases
