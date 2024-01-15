@@ -5,11 +5,11 @@ python -m venv venv
 ```
 
 ```sh
-pip install pipreqs
+pip install pipreqs uvicorn aiosqlite
 ```
 
 ```sh
-pipreqs C:\Users\phuong\Documents\Workspaces\Python\ChatGPT --force
+pipreqs C:\Users\vieng\Documents\Workspaces\ChatGPT\ChatGPT-HR --force
 ```
 
 ```sh
@@ -35,5 +35,5 @@ pip uninstall
 ## Run App
 
 ```sh
-uvicorn app.main:app --reload
+uvicorn app.main01:app --reload
 ```

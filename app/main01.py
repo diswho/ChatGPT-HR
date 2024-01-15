@@ -2,7 +2,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy import create_engine, text
 from databases import Database
 
-DATABASE_URL = r"sqlite:///c:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
+DATABASE_URL = r"sqlite:///C:\\Users\\vieng\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
+# DATABASE_URL = r"sqlite:///c:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
 
 # Create the FastAPI app
 app = FastAPI()
