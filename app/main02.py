@@ -22,7 +22,8 @@ class DestinationModel(Base):
 
 
 # Configure database URLs
-source_db_url = r"sqlite:///C:\\Users\\vieng\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
+source_db_url = r"sqlite:///C:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
+# source_db_url = r"sqlite:///C:\\Users\\vieng\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
 # source_db_url = "sqlite:///source.db"
 destination_db_url = "sqlite:///destination.db"
 
