@@ -35,5 +35,5 @@ pip uninstall
 ## Run App
 
 ```sh
-uvicorn app.main01:app --reload
+uvicorn app.main:app --reload
 ```

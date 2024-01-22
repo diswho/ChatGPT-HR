@@ -3,6 +3,7 @@ from sqlalchemy import create_engine, text
 from databases import Database
 from sqlalchemy.orm import sessionmaker
 
+
 # Create databases
 DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
 DATABASE_URL_LOCAL = "sqlite:///./local.db"
