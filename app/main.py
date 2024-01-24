@@ -1,16 +1,18 @@
 from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy import create_engine, text
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from databases import Database
-from sqlalchemy.orm import sessionmaker
 
 from typing import Any
+# from sqlalchemy import create_engine, text
+from sqlalchemy import Boolean, Column,  Integer, String, ForeignKey, create_engine, text
+from sqlalchemy.orm import relationship, sessionmaker, Session
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
-from sqlalchemy import Boolean, Column,  Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
-from pydantic import BaseModel, EmailStr
 from sqlalchemy.ext.associationproxy import association_proxy
+from pydantic import BaseModel, EmailStr
 from typing import Optional
-from sqlalchemy.orm import Session
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from datetime import datetime, timedelta
 
 
 @as_declarative()
@@ -38,7 +40,7 @@ class User(Base):
 class UserBase(BaseModel):
     email: Optional[EmailStr] = None
     is_active: Optional[bool] = True
-    is_superuser: Optional [bool] = False
+    is_superuser: Optional[bool] = False
     full_name: Optional[str] = None
     remark: Optional[str] = None
 
@@ -77,6 +79,16 @@ class RoleUser(Base):
 DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\vieng\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
 # DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
 DATABASE_URL_LOCAL = "sqlite:///./local.db"
+
+SECRET_KEY = "your-secret-key"  # Replace with a strong secret key
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+# OAuth2PasswordBearer for token extraction
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Create the FastAPI app
 app = FastAPI()
@@ -127,15 +139,109 @@ def get_lcl():
 
 
 def create(db: Session, user: UserCreate) -> Optional[User]:
+    hashed_password = pwd_context.hash(user.hashed_password)
     db_user = User(email=user.email,
-                   hashed_password="get_password_hash "+user.hashed_password,
-                   #    hashed_password=get_password_hash(user.hashed_password),
+                   hashed_password=hashed_password,
                    full_name=user.full_name,
                    is_superuser=user.is_superuser)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def delete_user(db: Session, user_id: int):
+    # Retrieve the user by user_id
+    user = db.query(User).filter(User.id == user_id).first()
+
+    # Check if the user exists
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Delete the user
+    db.delete(user)
+    db.commit()
+
+    return {"message": "User deleted successfully"}
+
+
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+# Function to verify hashed password
+
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+# Function to get a user by email
+
+
+def get_user(db, email: str):
+    return db.query(User).filter(User.email == email).first()
+
+# Dependency for token verification
+
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_lcl)):
+    credentials_exception = HTTPException(
+        status_code=401, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"}
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+        # token_data = {"sub": email}
+        token_data = {"sub": email}
+    except JWTError:
+        raise credentials_exception
+    me = get_user(db, email)
+    if not me:
+        raise HTTPException(status_code=404, detail="User not found")
+    return me
+
+# Token endpoint for OAuth2
+
+
+@app.post("/token")
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_lcl)):
+    user = get_user(db, form_data.username)
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": form_data.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token,
+            "token_type": "bearer",
+            "email": user.email,
+            "is_active": user.is_active,
+            "is_superuser": user.is_superuser,
+            "full_name": user.full_name,
+            "user_id": user.id}
+
+
+
+@app.get("/users/me", response_model=UserBase)
+async def read_users_me(current_user: UserBase = Depends(get_current_user)):
+    return current_user
+
+
+@app.delete("/users/{user_id}")
+async def delete_user_endpoint(user_id: int, db: Session = Depends(get_lcl)):
+    return delete_user(db=db, user_id=user_id)
 
 
 @app.post("/users/{user_id}", response_model=UserCreate)
@@ -158,7 +264,7 @@ async def insert_user(user_id: int, db: Session = Depends(get_lcl)):
 
 
 @app.get("/users/{user_id}")
-async def read_user_external(user_id: int):
+async def read_external_user(user_id: int):
     query = text("SELECT * FROM hr_employee WHERE id = :user_id")
 
     # Use the session from SessionLocal for database operations
