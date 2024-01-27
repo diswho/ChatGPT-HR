@@ -50,6 +50,15 @@ class UserCreate(UserBase):
     hashed_password: str
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: str | None = None
+
+
 class Item(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
@@ -76,11 +85,12 @@ class RoleUser(Base):
 
 
 # Create databases
-DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\vieng\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
-# DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
+# DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\vieng\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
+DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
 DATABASE_URL_LOCAL = "sqlite:///./local.db"
 
-SECRET_KEY = "your-secret-key"  # Replace with a strong secret key
+# Replace with a strong secret key
+SECRET_KEY = "f3bc724a1cbd9b106f929c4bf246514862e3ed34fb117248c215de24bcd898c0"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -200,15 +210,18 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         if email is None:
             raise credentials_exception
         # token_data = {"sub": email}
-        token_data = {"sub": email}
+        # token_data = {"sub": email}
+        token_data = TokenData(username=email)
     except JWTError:
         raise credentials_exception
-    me = get_user(db, email)
-    if not me:
+    # me = get_user(db, email)
+    user = get_user(db, email=token_data.username)
+    if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return me
+    return user
 
-# Token endpoint for OAuth2
+# TODO: Check if any update
+# Get Info of each employee, Summary
 
 
 @app.post("/token")
@@ -233,21 +246,22 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             "user_id": user.id}
 
 
-
 @app.get("/users/me", response_model=UserBase)
 async def read_users_me(current_user: UserBase = Depends(get_current_user)):
+
     return current_user
 
 
 @app.delete("/users/{user_id}")
-async def delete_user_endpoint(user_id: int, db: Session = Depends(get_lcl)):
+async def delete_user_endpoint(user_id: int, db: Session = Depends(get_lcl), current_user: UserBase = Depends(get_current_user)):
+
     return delete_user(db=db, user_id=user_id)
 
 
 @app.post("/users/{user_id}", response_model=UserCreate)
-async def insert_user(user_id: int, db: Session = Depends(get_lcl)):
-    query = text("SELECT * FROM hr_employee WHERE id = :user_id")
+async def insert_user(user_id: int, db: Session = Depends(get_lcl), current_user: UserBase = Depends(get_current_user)):
 
+    query = text("SELECT * FROM hr_employee WHERE id = :user_id")
     with SessionExternal() as session:
         result = session.execute(query, {"user_id": user_id}).fetchone()
     new_user = UserCreate
@@ -264,12 +278,9 @@ async def insert_user(user_id: int, db: Session = Depends(get_lcl)):
 
 
 @app.get("/users/{user_id}")
-async def read_external_user(user_id: int):
-    query = text("SELECT * FROM hr_employee WHERE id = :user_id")
+async def read_external_user(user_id: int, current_user: UserBase = Depends(get_current_user)):
 
-    # Use the session from SessionLocal for database operations
-    # with SessionExternal() as session:
-    #     result = session.execute(query, {"user_id": user_id}).fetchone()
+    query = text("SELECT * FROM hr_employee WHERE id = :user_id")
     with SessionExternal() as session:
         result = session.execute(query, {"user_id": user_id}).fetchone()
 
