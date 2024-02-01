@@ -21,8 +21,22 @@ def init() -> None:
         session.add_all([role_user, role_moderator, role_admin])
         session.commit()
 
-        user_normal = User(full_name="normal",email="normal@email.com", hashed_password=pwd_context.hash("normal"))
-        user_superadmin = User(full_name="superadmin",email="superadmin@email.com", hashed_password=pwd_context.hash("superadmin"))
+        user_normal = User(
+            full_name="normal",
+            email="normal@email.com", 
+            hashed_password=pwd_context.hash("normal"),
+            emp_pin="01",
+            emp_firstname="normal@email.com",
+            emp_active=1
+            )
+        user_superadmin = User(
+            full_name="superadmin",
+            email="superadmin@email.com", 
+            hashed_password=pwd_context.hash("superadmin"),
+            emp_pin="012",
+            emp_firstname="superadmin@email.com",
+            emp_active=1
+            )
 
         session.add_all([user_normal, user_superadmin])
         session.commit()

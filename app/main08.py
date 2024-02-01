@@ -4,8 +4,7 @@ from databases import Database
 
 from typing import Any
 # from sqlalchemy import create_engine, text
-from sqlalchemy import Boolean, Column,  Integer, String, ForeignKey, create_engine, text, DateTime,  Numeric, BigInteger
-from sqlalchemy.types import LargeBinary
+from sqlalchemy import Boolean, Column,  Integer, String, ForeignKey, create_engine, text
 from sqlalchemy.orm import relationship, sessionmaker, Session
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -36,47 +35,6 @@ class User(Base):
     is_superuser = Column(Boolean(), default=False)
     items = relationship("Item", back_populates="owner")
     roles = relationship("RoleUser", back_populates="user")
-    emp_pin = Column(String, nullable=False)
-    emp_ssn = Column(String)
-    emp_firstname = Column(String, nullable=False)
-    emp_lastname = Column(String)
-    emp_phone = Column(String)
-    emp_photo = Column(LargeBinary)
-    emp_privilege = Column(String)
-    emp_hiredate = Column(DateTime)
-    emp_address = Column(String)
-    emp_active = Column(Integer, nullable=False)
-    emp_firedate = Column(DateTime)
-    emp_firereason = Column(String)
-    emp_emergencyphone1 = Column(String)
-    emp_emergencyphone2 = Column(String)
-    emp_emergencyname = Column(String)
-    emp_emergencyaddress = Column(String)
-    emp_cardNumber = Column(String)
-    emp_country = Column(String)
-    emp_city = Column(String)
-    emp_state = Column(String)
-    emp_email = Column(String)
-    emp_title = Column(String)
-    emp_hourlyrate1 = Column(Integer)
-    emp_hourlyrate2 = Column(Integer)
-    emp_hourlyrate3 = Column(Integer)
-    emp_hourlyrate4 = Column(Integer)
-    emp_hourlyrate5 = Column(Integer)
-    emp_gender = Column(Integer)
-    emp_birthday = Column(DateTime)
-    emp_operationmode = Column(Integer)
-    emp_Line = Column(String)
-    emp_Passport = Column(String)
-    emp_MotobikeLicence = Column(String)
-    emp_CarLicence = Column(String)
-    IsSelect = Column(Integer)
-    middleware_id = Column(Integer)
-    nationalID = Column(String)
-    emp_Verify = Column(String)
-    emp_ViceCard = Column(String)
-    department_id = Column(Integer)
-    position_id = Column(Integer)
 
 
 class UserBase(BaseModel):
@@ -90,54 +48,6 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     email: EmailStr
     hashed_password: str
-
-
-class UserInDB(UserBase):
-    id: int
-    hashed_password: Optional[str] = None
-    emp_pin: Optional[str] = None
-    emp_firstname: Optional[str] = None
-    emp_lastname: Optional[str] = None
-    emp_active: int
-    items: Optional[list] = None
-    roles: Optional[list] = None
-    emp_ssn: Optional[str] = None
-    emp_phone: Optional[str] = None
-    emp_photo: Optional[bytes] = None
-    emp_privilege: Optional[str] = None
-    emp_hiredate: Optional[datetime] = None
-    emp_address: Optional[str] = None
-    emp_firedate: Optional[datetime] = None
-    emp_firereason: Optional[str] = None
-    emp_emergencyphone1: Optional[str] = None
-    emp_emergencyphone2: Optional[str] = None
-    emp_emergencyname: Optional[str] = None
-    emp_emergencyaddress: Optional[str] = None
-    emp_cardNumber: Optional[str] = None
-    emp_country: Optional[str] = None
-    emp_city: Optional[str] = None
-    emp_state: Optional[str] = None
-    emp_email: Optional[str] = None
-    emp_title: Optional[str] = None
-    emp_hourlyrate1: Optional[int] = None
-    emp_hourlyrate2: Optional[int] = None
-    emp_hourlyrate3: Optional[int] = None
-    emp_hourlyrate4: Optional[int] = None
-    emp_hourlyrate5: Optional[int] = None
-    emp_gender: Optional[int] = None
-    emp_birthday: Optional[datetime] = None
-    emp_operationmode: Optional[int] = None
-    emp_Line: Optional[str] = None
-    emp_Passport: Optional[str] = None
-    emp_MotobikeLicence: Optional[str] = None
-    emp_CarLicence: Optional[str] = None
-    IsSelect: Optional[int] = None
-    middleware_id: Optional[int] = None
-    nationalID: Optional[str] = None
-    emp_Verify: Optional[str] = None
-    emp_ViceCard: Optional[str] = None
-    department_id: Optional[int] = None
-    position_id: Optional[int] = None
 
 
 class Token(BaseModel):
@@ -175,8 +85,8 @@ class RoleUser(Base):
 
 
 # Create databases
-DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\vieng\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
-# DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
+# DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\vieng\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
+DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
 DATABASE_URL_LOCAL = "sqlite:///./local.db"
 
 # Replace with a strong secret key
@@ -379,52 +289,3 @@ async def read_external_user(user_id: int, current_user: UserBase = Depends(get_
 
     user = dict(result)
     return user
-
-
-@app.get("/users")
-async def database_comparing(db: Session = Depends(get_lcl), current_user: UserBase = Depends(get_current_user)):
-    query_ext = text("""
-                 SELECT id,emp_pin,emp_ssn,emp_firstname,emp_lastname,emp_phone,emp_photo,emp_privilege,
-                 emp_hiredate,emp_address,emp_active,emp_firedate,emp_firereason,emp_emergencyphone1,emp_emergencyphone2,emp_emergencyname,emp_emergencyaddress,
-                 emp_cardNumber,emp_country,emp_city,emp_state,emp_email,emp_title,emp_hourlyrate1,emp_hourlyrate2,emp_hourlyrate3,emp_hourlyrate4,emp_hourlyrate5,
-                 emp_gender,emp_birthday,emp_operationmode,emp_Line,emp_Passport,emp_MotobikeLicence,emp_CarLicence,IsSelect,middleware_id,
-                 nationalID,emp_Verify,emp_ViceCard,department_id,position_id
-                 FROM "hr_employee" ;
-                 """)
-    query_int = text("""
-                 SELECT id,emp_pin,emp_ssn,emp_firstname,emp_lastname,emp_phone,emp_photo,emp_privilege,
-                 emp_hiredate,emp_address,emp_active,emp_firedate,emp_firereason,emp_emergencyphone1,emp_emergencyphone2,emp_emergencyname,emp_emergencyaddress,
-                 emp_cardNumber,emp_country,emp_city,emp_state,emp_email,emp_title,emp_hourlyrate1,emp_hourlyrate2,emp_hourlyrate3,emp_hourlyrate4,emp_hourlyrate5,
-                 emp_gender,emp_birthday,emp_operationmode,emp_Line,emp_Passport,emp_MotobikeLicence,emp_CarLicence,IsSelect,middleware_id,
-                 nationalID,emp_Verify,emp_ViceCard,department_id,position_id
-                 FROM "user" ;
-                     """)
-    data1 = SessionExternal().execute(query_ext).fetchall()
-    data2 = SessionLocal().execute(query_int).fetchall()
-
-    for row in data1:
-        is_new_record = True
-        for i, record in enumerate(data2):
-            if record[1] == row[1]:
-                # Update existing record
-                data2[i] = row
-                is_new_record = False
-            break
-        # If the record is not found, add it to the list
-        if is_new_record:
-            SessionLocal().execute("INSERT INTO user (id,full_name,email,hashed_password,is_active,is_superuser,emp_pin,emp_ssn,emp_firstname,emp_lastname,emp_phone,emp_photo,emp_privilege,emp_hiredate,emp_address,emp_active,emp_firedate,emp_firereason,emp_emergencyphone1,emp_emergencyphone2,emp_emergencyname,emp_emergencyaddress, emp_cardNumber,emp_country,emp_city,emp_state,emp_email,emp_title,emp_hourlyrate1,emp_hourlyrate2,emp_hourlyrate3,emp_hourlyrate4,emp_hourlyrate5, emp_gender,emp_birthday,emp_operationmode,emp_Line,emp_Passport,emp_MotobikeLicence,emp_CarLicence,IsSelect,middleware_id,nationalID,emp_Verify,emp_ViceCard,department_id,position_id) VALUES (?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?)",
-                                   (row[0],	row[3]+" " + row[4], row[1]+"@mail.com", pwd_context.hash("1234"), True, False, row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14], row[15], row[16], row[17], row[18], row[19], row[20], row[21], row[22], row[23], row[24], row[25], row[26], row[27], row[28], row[29], row[30], row[31], row[32], row[33], row[34], row[35], row[36], row[37], row[38], row[39], row[40], row[41]))
-            # records.append(new_record)
-
-    # for row1 in data1:
-    #     # Check if row exists in table2
-    #     if row1 not in data2:
-    #         print("New Record found in table1:", row1)
-    #     else:
-    #         # Compare each field to identify updates
-    #         index = data2.index(row1)
-    #         for i in range(len(row1)):
-    #             if row1[i] != data2[index][i]:
-    #                 print("Updated Record found:", row1, "->", data2[index])
-
-    return "Success"
