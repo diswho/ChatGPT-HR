@@ -5,7 +5,7 @@ python -m venv venv
 ```
 
 ```sh
-pip install pipreqs uvicorn aiosqlite python-jose passlib python-multipart "python-jose[cryptography]" "passlib[bcrypt]"
+pip install pipreqs uvicorn aiosqlite python-jose passlib python-multipart "python-jose[cryptography]" "passlib[bcrypt]" pydantic[email]
 ```
 
 ```sh

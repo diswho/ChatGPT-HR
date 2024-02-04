@@ -175,8 +175,8 @@ class RoleUser(Base):
 
 
 # Create databases
-DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\vieng\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
-# DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
+# DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\vieng\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
+DATABASE_URL_EXTERNAL = r"sqlite:///C:\\Users\\phuong\\OneDrive\\Private\\Xokthavi\\HR\\ZKTimeNet.db"
 DATABASE_URL_LOCAL = "sqlite:///./local.db"
 
 # Replace with a strong secret key
@@ -412,7 +412,7 @@ async def database_comparing(db: Session = Depends(get_lcl), current_user: UserB
             break
         # If the record is not found, add it to the list
         if is_new_record:
-            SessionLocal().execute("INSERT INTO user (id,full_name,email,hashed_password,is_active,is_superuser,emp_pin,emp_ssn,emp_firstname,emp_lastname,emp_phone,emp_photo,emp_privilege,emp_hiredate,emp_address,emp_active,emp_firedate,emp_firereason,emp_emergencyphone1,emp_emergencyphone2,emp_emergencyname,emp_emergencyaddress, emp_cardNumber,emp_country,emp_city,emp_state,emp_email,emp_title,emp_hourlyrate1,emp_hourlyrate2,emp_hourlyrate3,emp_hourlyrate4,emp_hourlyrate5, emp_gender,emp_birthday,emp_operationmode,emp_Line,emp_Passport,emp_MotobikeLicence,emp_CarLicence,IsSelect,middleware_id,nationalID,emp_Verify,emp_ViceCard,department_id,position_id) VALUES (?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?)",
+            SessionLocal().execute("INSERT INTO user (id,full_name,email,hashed_password,is_active,is_superuser,emp_pin,emp_ssn,emp_firstname,emp_lastname,emp_phone,emp_photo,emp_privilege,emp_hiredate,emp_address,emp_active,emp_firedate,emp_firereason,emp_emergencyphone1,emp_emergencyphone2,emp_emergencyname,emp_emergencyaddress, emp_cardNumber,emp_country,emp_city,emp_state,emp_email,emp_title,emp_hourlyrate1,emp_hourlyrate2,emp_hourlyrate3,emp_hourlyrate4,emp_hourlyrate5, emp_gender,emp_birthday,emp_operationmode,emp_Line,emp_Passport,emp_MotobikeLicence,emp_CarLicence,IsSelect,middleware_id,nationalID,emp_Verify,emp_ViceCard,department_id,position_id) VALUES (?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?,	?)",
                                    (row[0],	row[3]+" " + row[4], row[1]+"@mail.com", pwd_context.hash("1234"), True, False, row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14], row[15], row[16], row[17], row[18], row[19], row[20], row[21], row[22], row[23], row[24], row[25], row[26], row[27], row[28], row[29], row[30], row[31], row[32], row[33], row[34], row[35], row[36], row[37], row[38], row[39], row[40], row[41]))
             # records.append(new_record)
 
