@@ -1,18 +1,18 @@
 from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from databases import Database
+from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from sqlalchemy.orm import relationship, sessionmaker, Session
+from sqlalchemy import Boolean, Column,  Integer, String, ForeignKey, create_engine, text, DateTime,  Numeric, BigInteger
 
 from typing import Any
 # from sqlalchemy import create_engine, text
-from sqlalchemy import Boolean, Column,  Integer, String, ForeignKey, create_engine, text, DateTime,  Numeric, BigInteger
 from sqlalchemy.types import LargeBinary
-from sqlalchemy.orm import relationship, sessionmaker, Session
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.ext.associationproxy import association_proxy
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from datetime import datetime, timedelta
 
 

@@ -6,5 +6,8 @@
             "name": "aa",
             "database": "${workspaceFolder:ChatGPT-HR}/local.db"
         }
-    ]
+    ],
+    "editor.wordWrapColumn": 280,
+    "editor.wordWrap": "bounded",
+    "python.autoComplete.extraPaths": []
 }
